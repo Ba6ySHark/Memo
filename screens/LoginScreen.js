@@ -1,53 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
-  Text,
-  TextInput,
   TouchableOpacity,
-  Dimensions,
-  Platform,
+  Text,
   Alert,
   ScrollView,
-  Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import { loginStyles } from '../styles/LoginScreen.styles';
-
-const { width, height } = Dimensions.get('window');
+import {
+  GlassInput,
+  GradientButton,
+  AnimatedContainer,
+  BackgroundCircles,
+  ScreenHeader,
+  NavigationLink,
+} from './components';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  // Animation values
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
-
-  useEffect(() => {
-    // Staggered entrance animation
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.timing(slideAnim, {
-          toValue: 0,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-      ]),
-    ]).start();
-  }, []);
 
   const handleLogin = () => {
     if (!email || !password) {
@@ -69,9 +42,11 @@ export default function LoginScreen({ navigation }) {
       style={loginStyles.gradient}
     >
       {/* Background decorative elements */}
-      <View style={loginStyles.circle1} />
-      <View style={loginStyles.circle2} />
-      <View style={loginStyles.circle3} />
+      <BackgroundCircles
+        circle1Style={loginStyles.circle1}
+        circle2Style={loginStyles.circle2}
+        circle3Style={loginStyles.circle3}
+      />
       
       <ScrollView 
         style={loginStyles.scrollView}
@@ -79,133 +54,79 @@ export default function LoginScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <Animated.View 
-          style={[
-            loginStyles.content,
-            {
-              opacity: fadeAnim,
-              transform: [
-                { translateY: slideAnim },
-                { scale: scaleAnim },
-              ],
-            },
-          ]}
-        >
+        <AnimatedContainer style={loginStyles.content}>
           {/* Header */}
-          <Animated.View 
-            style={[
-              loginStyles.header,
-              {
-                opacity: fadeAnim,
-                transform: [{ translateY: slideAnim }],
-              },
-            ]}
-          >
-            <Text style={loginStyles.title}>Welcome Back</Text>
-            <Text style={loginStyles.subtitle}>Sign in to continue</Text>
-          </Animated.View>
+          <AnimatedContainer style={loginStyles.header}>
+            <ScreenHeader
+              title="Welcome Back"
+              subtitle="Sign in to continue"
+              titleStyle={loginStyles.title}
+              subtitleStyle={loginStyles.subtitle}
+            />
+          </AnimatedContainer>
 
           {/* Login Form */}
           <View style={loginStyles.formContainer}>
             {/* Email Input */}
-            <Animated.View 
-              style={[
-                loginStyles.inputContainer,
-                {
-                  opacity: fadeAnim,
-                  transform: [{ translateY: slideAnim }],
-                },
-              ]}
-            >
-              <Text style={loginStyles.inputLabel}>Email</Text>
-              <BlurView intensity={20} style={loginStyles.glassInput}>
-                <TextInput
-                  style={loginStyles.input}
-                  placeholder="Enter your email"
-                  placeholderTextColor="rgba(255, 255, 255, 0.6)"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </BlurView>
-            </Animated.View>
+            <AnimatedContainer style={loginStyles.inputContainer}>
+              <GlassInput
+                label="Email"
+                placeholder="Enter your email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                labelStyle={loginStyles.inputLabel}
+                style={loginStyles.glassInput}
+                inputStyle={loginStyles.input}
+              />
+            </AnimatedContainer>
 
             {/* Password Input */}
-            <Animated.View 
-              style={[
-                loginStyles.inputContainer,
-                {
-                  opacity: fadeAnim,
-                  transform: [{ translateY: slideAnim }],
-                },
-              ]}
-            >
-              <Text style={loginStyles.inputLabel}>Password</Text>
-              <BlurView intensity={20} style={loginStyles.glassInput}>
-                <TextInput
-                  style={loginStyles.input}
-                  placeholder="Enter your password"
-                  placeholderTextColor="rgba(255, 255, 255, 0.6)"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                />
-              </BlurView>
-            </Animated.View>
+            <AnimatedContainer style={loginStyles.inputContainer}>
+              <GlassInput
+                label="Password"
+                placeholder="Enter your password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                labelStyle={loginStyles.inputLabel}
+                style={loginStyles.glassInput}
+                inputStyle={loginStyles.input}
+              />
+            </AnimatedContainer>
 
             {/* Forgot Password */}
-            <Animated.View
-              style={{
-                opacity: fadeAnim,
-                transform: [{ translateY: slideAnim }],
-              }}
-            >
+            <AnimatedContainer>
               <TouchableOpacity style={loginStyles.forgotPassword}>
                 <Text style={loginStyles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
-            </Animated.View>
+            </AnimatedContainer>
 
             {/* Login Button */}
-            <Animated.View
-              style={{
-                opacity: fadeAnim,
-                transform: [{ translateY: slideAnim }],
-              }}
-            >
-              <TouchableOpacity 
-                style={[loginStyles.loginButton, isLoading && loginStyles.loginButtonDisabled]}
+            <AnimatedContainer>
+              <GradientButton
+                title={isLoading ? 'Signing In...' : 'Sign In'}
                 onPress={handleLogin}
                 disabled={isLoading}
-              >
-                <LinearGradient
-                  colors={['#667eea', '#764ba2']}
-                  style={loginStyles.buttonGradient}
-                >
-                  <Text style={loginStyles.loginButtonText}>
-                    {isLoading ? 'Signing In...' : 'Sign In'}
-                  </Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </Animated.View>
+                style={loginStyles.loginButton}
+                textStyle={loginStyles.loginButtonText}
+                gradientStyle={loginStyles.buttonGradient}
+              />
+            </AnimatedContainer>
 
             {/* Sign Up Link */}
-            <Animated.View 
-              style={[
-                loginStyles.signupContainer,
-                {
-                  opacity: fadeAnim,
-                  transform: [{ translateY: slideAnim }],
-                },
-              ]}
-            >
-              <Text style={loginStyles.signupText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-                <Text style={loginStyles.signupLink}>Sign Up</Text>
-              </TouchableOpacity>
-            </Animated.View>
+            <AnimatedContainer style={loginStyles.signupContainer}>
+              <NavigationLink
+                text="Don't have an account?"
+                linkText="Sign Up"
+                onPress={() => navigation.navigate('Signup')}
+                textStyle={loginStyles.signupText}
+                linkStyle={loginStyles.signupLink}
+              />
+            </AnimatedContainer>
           </View>
-        </Animated.View>
+        </AnimatedContainer>
       </ScrollView>
     </LinearGradient>
   );
