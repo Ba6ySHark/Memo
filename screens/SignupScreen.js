@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   Dimensions,
   Platform,
   Alert,
@@ -13,6 +12,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import { signupStyles } from '../styles/SignupScreen.styles';
 
 const { width, height } = Dimensions.get('window');
 
@@ -78,23 +78,23 @@ export default function SignupScreen({ navigation }) {
   return (
     <LinearGradient
       colors={['#000000', '#1a1a1a', '#000000']}
-      style={styles.gradient}
+      style={signupStyles.gradient}
     >
       {/* Background decorative elements */}
-      <View style={styles.circle1} />
-      <View style={styles.circle2} />
-      <View style={styles.circle3} />
-      <View style={styles.circle4} />
+      <View style={signupStyles.circle1} />
+      <View style={signupStyles.circle2} />
+      <View style={signupStyles.circle3} />
+      <View style={signupStyles.circle4} />
       
       <ScrollView 
-        contentContainerStyle={styles.scrollContent}
+        style={signupStyles.scrollView}
+        contentContainerStyle={signupStyles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        style={styles.scrollView}
       >
         <Animated.View 
           style={[
-            styles.content,
+            signupStyles.content,
             {
               opacity: fadeAnim,
               transform: [
@@ -107,33 +107,33 @@ export default function SignupScreen({ navigation }) {
           {/* Header */}
           <Animated.View 
             style={[
-              styles.header,
+              signupStyles.header,
               {
                 opacity: fadeAnim,
                 transform: [{ translateY: slideAnim }],
               },
             ]}
           >
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join us today</Text>
+            <Text style={signupStyles.title}>Create Account</Text>
+            <Text style={signupStyles.subtitle}>Join us today</Text>
           </Animated.View>
 
           {/* Signup Form */}
-          <View style={styles.formContainer}>
+          <View style={signupStyles.formContainer}>
             {/* Full Name Input */}
             <Animated.View 
               style={[
-                styles.inputContainer,
+                signupStyles.inputContainer,
                 {
                   opacity: fadeAnim,
                   transform: [{ translateY: slideAnim }],
                 },
               ]}
             >
-              <Text style={styles.inputLabel}>Full Name</Text>
-              <BlurView intensity={20} style={styles.glassInput}>
+              <Text style={signupStyles.inputLabel}>Full Name</Text>
+              <BlurView intensity={20} style={signupStyles.glassInput}>
                 <TextInput
-                  style={styles.input}
+                  style={signupStyles.input}
                   placeholder="Enter your full name"
                   placeholderTextColor="rgba(255, 255, 255, 0.6)"
                   value={fullName}
@@ -146,17 +146,17 @@ export default function SignupScreen({ navigation }) {
             {/* Email Input */}
             <Animated.View 
               style={[
-                styles.inputContainer,
+                signupStyles.inputContainer,
                 {
                   opacity: fadeAnim,
                   transform: [{ translateY: slideAnim }],
                 },
               ]}
             >
-              <Text style={styles.inputLabel}>Email</Text>
-              <BlurView intensity={20} style={styles.glassInput}>
+              <Text style={signupStyles.inputLabel}>Email</Text>
+              <BlurView intensity={20} style={signupStyles.glassInput}>
                 <TextInput
-                  style={styles.input}
+                  style={signupStyles.input}
                   placeholder="Enter your email"
                   placeholderTextColor="rgba(255, 255, 255, 0.6)"
                   value={email}
@@ -170,17 +170,17 @@ export default function SignupScreen({ navigation }) {
             {/* Password Input */}
             <Animated.View 
               style={[
-                styles.inputContainer,
+                signupStyles.inputContainer,
                 {
                   opacity: fadeAnim,
                   transform: [{ translateY: slideAnim }],
                 },
               ]}
             >
-              <Text style={styles.inputLabel}>Password</Text>
-              <BlurView intensity={20} style={styles.glassInput}>
+              <Text style={signupStyles.inputLabel}>Password</Text>
+              <BlurView intensity={20} style={signupStyles.glassInput}>
                 <TextInput
-                  style={styles.input}
+                  style={signupStyles.input}
                   placeholder="Enter your password"
                   placeholderTextColor="rgba(255, 255, 255, 0.6)"
                   value={password}
@@ -193,17 +193,17 @@ export default function SignupScreen({ navigation }) {
             {/* Confirm Password Input */}
             <Animated.View 
               style={[
-                styles.inputContainer,
+                signupStyles.inputContainer,
                 {
                   opacity: fadeAnim,
                   transform: [{ translateY: slideAnim }],
                 },
               ]}
             >
-              <Text style={styles.inputLabel}>Confirm Password</Text>
-              <BlurView intensity={20} style={styles.glassInput}>
+              <Text style={signupStyles.inputLabel}>Confirm Password</Text>
+              <BlurView intensity={20} style={signupStyles.glassInput}>
                 <TextInput
-                  style={styles.input}
+                  style={signupStyles.input}
                   placeholder="Confirm your password"
                   placeholderTextColor="rgba(255, 255, 255, 0.6)"
                   value={confirmPassword}
@@ -216,18 +216,18 @@ export default function SignupScreen({ navigation }) {
             {/* Terms and Conditions */}
             <Animated.View 
               style={[
-                styles.termsContainer,
+                signupStyles.termsContainer,
                 {
                   opacity: fadeAnim,
                   transform: [{ translateY: slideAnim }],
                 },
               ]}
             >
-              <Text style={styles.termsText}>
+              <Text style={signupStyles.termsText}>
                 By signing up, you agree to our{' '}
-                <Text style={styles.termsLink}>Terms of Service</Text>
+                <Text style={signupStyles.termsLink}>Terms of Service</Text>
                 {' '}and{' '}
-                <Text style={styles.termsLink}>Privacy Policy</Text>
+                <Text style={signupStyles.termsLink}>Privacy Policy</Text>
               </Text>
             </Animated.View>
 
@@ -239,15 +239,15 @@ export default function SignupScreen({ navigation }) {
               }}
             >
               <TouchableOpacity 
-                style={[styles.signupButton, isLoading && styles.signupButtonDisabled]}
+                style={[signupStyles.signupButton, isLoading && signupStyles.signupButtonDisabled]}
                 onPress={handleSignup}
                 disabled={isLoading}
               >
                 <LinearGradient
                   colors={['#667eea', '#764ba2']}
-                  style={styles.buttonGradient}
+                  style={signupStyles.buttonGradient}
                 >
-                  <Text style={styles.signupButtonText}>
+                  <Text style={signupStyles.signupButtonText}>
                     {isLoading ? 'Creating Account...' : 'Create Account'}
                   </Text>
                 </LinearGradient>
@@ -257,16 +257,16 @@ export default function SignupScreen({ navigation }) {
             {/* Login Link */}
             <Animated.View 
               style={[
-                styles.loginContainer,
+                signupStyles.loginContainer,
                 {
                   opacity: fadeAnim,
                   transform: [{ translateY: slideAnim }],
                 },
               ]}
             >
-              <Text style={styles.loginText}>Already have an account? </Text>
+              <Text style={signupStyles.loginText}>Already have an account? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.loginLink}>Sign In</Text>
+                <Text style={signupStyles.loginLink}>Sign In</Text>
               </TouchableOpacity>
             </Animated.View>
           </View>
@@ -274,143 +274,4 @@ export default function SignupScreen({ navigation }) {
       </ScrollView>
     </LinearGradient>
   );
-}
-
-const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingVertical: 40,
-    minHeight: height,
-  },
-  circle1: {
-    position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-    top: 50,
-    left: -50,
-  },
-  circle2: {
-    position: 'absolute',
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: 'rgba(118, 75, 162, 0.1)',
-    top: 200,
-    right: -30,
-  },
-  circle3: {
-    position: 'absolute',
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(102, 126, 234, 0.05)',
-    bottom: 100,
-    left: 50,
-  },
-  circle4: {
-    position: 'absolute',
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(118, 75, 162, 0.08)',
-    bottom: 300,
-    right: 80,
-  },
-  content: {
-    width: width * 0.85,
-    alignSelf: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
-  formContainer: {
-    width: '100%',
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: 8,
-  },
-  glassInput: {
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    overflow: 'hidden',
-  },
-  input: {
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    fontSize: 16,
-    color: '#ffffff',
-    backgroundColor: 'transparent',
-  },
-  termsContainer: {
-    marginBottom: 30,
-  },
-  termsText: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 14,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  termsLink: {
-    color: '#667eea',
-    fontWeight: '600',
-  },
-  signupButton: {
-    borderRadius: 15,
-    overflow: 'hidden',
-    marginBottom: 30,
-  },
-  signupButtonDisabled: {
-    opacity: 0.7,
-  },
-  buttonGradient: {
-    paddingVertical: 15,
-    alignItems: 'center',
-  },
-  signupButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  loginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loginText: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 16,
-  },
-  loginLink: {
-    color: '#667eea',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-}); 
+} 

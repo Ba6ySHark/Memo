@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   Dimensions,
   Platform,
   Alert,
@@ -13,6 +12,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import { loginStyles } from '../styles/LoginScreen.styles';
 
 const { width, height } = Dimensions.get('window');
 
@@ -66,22 +66,22 @@ export default function LoginScreen({ navigation }) {
   return (
     <LinearGradient
       colors={['#000000', '#1a1a1a', '#000000']}
-      style={styles.gradient}
+      style={loginStyles.gradient}
     >
       {/* Background decorative elements */}
-      <View style={styles.circle1} />
-      <View style={styles.circle2} />
-      <View style={styles.circle3} />
+      <View style={loginStyles.circle1} />
+      <View style={loginStyles.circle2} />
+      <View style={loginStyles.circle3} />
       
       <ScrollView 
-        contentContainerStyle={styles.scrollContent}
+        style={loginStyles.scrollView}
+        contentContainerStyle={loginStyles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        style={styles.scrollView}
       >
         <Animated.View 
           style={[
-            styles.content,
+            loginStyles.content,
             {
               opacity: fadeAnim,
               transform: [
@@ -94,33 +94,33 @@ export default function LoginScreen({ navigation }) {
           {/* Header */}
           <Animated.View 
             style={[
-              styles.header,
+              loginStyles.header,
               {
                 opacity: fadeAnim,
                 transform: [{ translateY: slideAnim }],
               },
             ]}
           >
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Sign in to continue</Text>
+            <Text style={loginStyles.title}>Welcome Back</Text>
+            <Text style={loginStyles.subtitle}>Sign in to continue</Text>
           </Animated.View>
 
           {/* Login Form */}
-          <View style={styles.formContainer}>
+          <View style={loginStyles.formContainer}>
             {/* Email Input */}
             <Animated.View 
               style={[
-                styles.inputContainer,
+                loginStyles.inputContainer,
                 {
                   opacity: fadeAnim,
                   transform: [{ translateY: slideAnim }],
                 },
               ]}
             >
-              <Text style={styles.inputLabel}>Email</Text>
-              <BlurView intensity={20} style={styles.glassInput}>
+              <Text style={loginStyles.inputLabel}>Email</Text>
+              <BlurView intensity={20} style={loginStyles.glassInput}>
                 <TextInput
-                  style={styles.input}
+                  style={loginStyles.input}
                   placeholder="Enter your email"
                   placeholderTextColor="rgba(255, 255, 255, 0.6)"
                   value={email}
@@ -134,17 +134,17 @@ export default function LoginScreen({ navigation }) {
             {/* Password Input */}
             <Animated.View 
               style={[
-                styles.inputContainer,
+                loginStyles.inputContainer,
                 {
                   opacity: fadeAnim,
                   transform: [{ translateY: slideAnim }],
                 },
               ]}
             >
-              <Text style={styles.inputLabel}>Password</Text>
-              <BlurView intensity={20} style={styles.glassInput}>
+              <Text style={loginStyles.inputLabel}>Password</Text>
+              <BlurView intensity={20} style={loginStyles.glassInput}>
                 <TextInput
-                  style={styles.input}
+                  style={loginStyles.input}
                   placeholder="Enter your password"
                   placeholderTextColor="rgba(255, 255, 255, 0.6)"
                   value={password}
@@ -161,8 +161,8 @@ export default function LoginScreen({ navigation }) {
                 transform: [{ translateY: slideAnim }],
               }}
             >
-              <TouchableOpacity style={styles.forgotPassword}>
-                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+              <TouchableOpacity style={loginStyles.forgotPassword}>
+                <Text style={loginStyles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
             </Animated.View>
 
@@ -174,15 +174,15 @@ export default function LoginScreen({ navigation }) {
               }}
             >
               <TouchableOpacity 
-                style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
+                style={[loginStyles.loginButton, isLoading && loginStyles.loginButtonDisabled]}
                 onPress={handleLogin}
                 disabled={isLoading}
               >
                 <LinearGradient
                   colors={['#667eea', '#764ba2']}
-                  style={styles.buttonGradient}
+                  style={loginStyles.buttonGradient}
                 >
-                  <Text style={styles.loginButtonText}>
+                  <Text style={loginStyles.loginButtonText}>
                     {isLoading ? 'Signing In...' : 'Sign In'}
                   </Text>
                 </LinearGradient>
@@ -192,16 +192,16 @@ export default function LoginScreen({ navigation }) {
             {/* Sign Up Link */}
             <Animated.View 
               style={[
-                styles.signupContainer,
+                loginStyles.signupContainer,
                 {
                   opacity: fadeAnim,
                   transform: [{ translateY: slideAnim }],
                 },
               ]}
             >
-              <Text style={styles.signupText}>Don't have an account? </Text>
+              <Text style={loginStyles.signupText}>Don't have an account? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-                <Text style={styles.signupLink}>Sign Up</Text>
+                <Text style={loginStyles.signupLink}>Sign Up</Text>
               </TouchableOpacity>
             </Animated.View>
           </View>
@@ -209,129 +209,4 @@ export default function LoginScreen({ navigation }) {
       </ScrollView>
     </LinearGradient>
   );
-}
-
-const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingVertical: 40,
-    minHeight: height,
-  },
-  circle1: {
-    position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-    top: 100,
-    left: -50,
-  },
-  circle2: {
-    position: 'absolute',
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: 'rgba(118, 75, 162, 0.1)',
-    top: 300,
-    right: -30,
-  },
-  circle3: {
-    position: 'absolute',
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(102, 126, 234, 0.05)',
-    bottom: 200,
-    left: 50,
-  },
-  content: {
-    width: width * 0.85,
-    alignSelf: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 50,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
-  formContainer: {
-    width: '100%',
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: 8,
-  },
-  glassInput: {
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    overflow: 'hidden',
-  },
-  input: {
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    fontSize: 16,
-    color: '#ffffff',
-    backgroundColor: 'transparent',
-  },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginBottom: 30,
-  },
-  forgotPasswordText: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 14,
-  },
-  loginButton: {
-    borderRadius: 15,
-    overflow: 'hidden',
-    marginBottom: 30,
-  },
-  loginButtonDisabled: {
-    opacity: 0.7,
-  },
-  buttonGradient: {
-    paddingVertical: 15,
-    alignItems: 'center',
-  },
-  loginButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  signupContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  signupText: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 16,
-  },
-  signupLink: {
-    color: '#667eea',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-}); 
+} 
