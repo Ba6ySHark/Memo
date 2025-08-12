@@ -68,10 +68,11 @@ export default function SignupScreen({ navigation }) {
       >
         <AnimatedContainer style={signupStyles.content}>
           {/* Header */}
-          <AnimatedContainer style={signupStyles.header}>
+          <AnimatedContainer>
             <ScreenHeader
               title="Create Account"
               subtitle="Join us today"
+              style={signupStyles.header}
               titleStyle={signupStyles.title}
               subtitleStyle={signupStyles.subtitle}
             />
@@ -159,11 +160,12 @@ export default function SignupScreen({ navigation }) {
             </AnimatedContainer>
 
             {/* Login Link */}
-            <AnimatedContainer style={signupStyles.loginContainer}>
+            <AnimatedContainer>
               <NavigationLink
                 text="Already have an account?"
                 linkText="Sign In"
                 onPress={() => navigation.navigate('Login')}
+                style={signupStyles.loginContainer}
                 textStyle={signupStyles.loginText}
                 linkStyle={signupStyles.loginLink}
               />
