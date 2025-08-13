@@ -88,21 +88,13 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Image Feed */}
+        {/* Image Feed with Buttons */}
         <View style={homeStyles.feedContainer}>
           <ImageFeed
             onImagePublish={handleImagePublish}
+            onSignOut={handleSignOut}
           />
         </View>
-
-        {/* Sign Out Button */}
-        <GradientButton
-          title="Sign Out"
-          onPress={handleSignOut}
-          style={homeStyles.signOutButton}
-          textStyle={homeStyles.signOutText}
-          gradientStyle={homeStyles.buttonGradient}
-        />
       </View>
 
       {/* Custom Alert */}

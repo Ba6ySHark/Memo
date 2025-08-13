@@ -13,7 +13,8 @@ import * as ImagePicker from 'expo-image-picker';
 export default function ImageFeed({ 
   style = {}, 
   containerStyle = {},
-  onImagePublish = () => {} 
+  onImagePublish = () => {},
+  onSignOut = () => {}
 }) {
   const [images, setImages] = useState([]);
 
@@ -51,29 +52,56 @@ export default function ImageFeed({
 
   return (
     <View style={style}>
-      {/* Publish Button */}
-      <TouchableOpacity onPress={pickAndPublishImage} style={{
+      {/* Buttons Container */}
+      <View style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 20,
-        alignSelf: 'center',
+        width: '100%',
       }}>
-        <BlurView intensity={20} style={{
-          borderRadius: 15,
-          borderWidth: 1,
-          borderColor: 'rgba(255, 255, 255, 0.2)',
-          overflow: 'hidden',
-          paddingHorizontal: 30,
-          paddingVertical: 15,
-        }}>
-          <Text style={{
-            color: '#ffffff',
-            fontSize: 16,
-            fontWeight: '600',
-            textAlign: 'center',
+        {/* Publish Button */}
+        <TouchableOpacity onPress={pickAndPublishImage}>
+          <BlurView intensity={20} style={{
+            borderRadius: 15,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 255, 255, 0.2)',
+            overflow: 'hidden',
+            paddingHorizontal: 30,
+            paddingVertical: 15,
           }}>
-            📷 Publish Image
-          </Text>
-        </BlurView>
-      </TouchableOpacity>
+            <Text style={{
+              color: '#ffffff',
+              fontSize: 16,
+              fontWeight: '600',
+              textAlign: 'center',
+            }}>
+              📷 Publish Image
+            </Text>
+          </BlurView>
+        </TouchableOpacity>
+
+        {/* Sign Out Button */}
+        <TouchableOpacity onPress={onSignOut}>
+          <BlurView intensity={20} style={{
+            borderRadius: 15,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 255, 255, 0.2)',
+            overflow: 'hidden',
+            paddingHorizontal: 30,
+            paddingVertical: 15,
+          }}>
+            <Text style={{
+              color: '#ffffff',
+              fontSize: 16,
+              fontWeight: '600',
+              textAlign: 'center',
+            }}>
+              🚪 Sign Out
+            </Text>
+          </BlurView>
+        </TouchableOpacity>
+      </View>
 
       {/* Images Feed */}
       <ScrollView 
