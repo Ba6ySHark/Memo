@@ -27,30 +27,22 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const signUp = async (email, password, fullName) => {
-    setLoading(true);
     const result = await authService.signUp(email, password, fullName);
-    setLoading(false);
     return result;
   };
 
   const signIn = async (email, password) => {
-    setLoading(true);
     const result = await authService.signIn(email, password);
-    setLoading(false);
     return result;
   };
 
   const signOut = async () => {
-    setLoading(true);
     const result = await authService.signOut();
-    setLoading(false);
     return result;
   };
 
   const resetPassword = async (email) => {
-    setLoading(true);
     const result = await authService.resetPassword(email);
-    setLoading(false);
     return result;
   };
 
