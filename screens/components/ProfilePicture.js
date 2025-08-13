@@ -22,12 +22,40 @@ export default function ProfilePicture({
   const [isLoading, setIsLoading] = useState(false);
   const { user: authUser } = useAuth();
 
-  // Load profile image from Firebase on component mount
+  // Load profile image from Firebase when component mounts or user changes
   useEffect(() => {
-    if (authUser?.uid && authUser?.profileImageURL) {
-      setProfileImage(authUser.profileImageURL);
+    if (authUser?.uid) {
+      loadProfileImageFromFirebase();
+    } else {
+      setProfileImage(null);
     }
-  }, [authUser]);
+  }, [authUser?.uid]);
+
+  const loadProfileImageFromFirebase = async () => {
+    try {
+      console.log('Loading profile image from Firebase for user:', authUser.uid);
+      
+      // Get user document from Firestore to check for profile image URL
+      const { db } = await import('../../config/firebase');
+      const { doc, getDoc } = await import('firebase/firestore');
+      
+      const userDoc = await getDoc(doc(db, 'users', authUser.uid));
+      
+      if (userDoc.exists() && userDoc.data().profileImageURL) {
+        console.log('Profile image found:', userDoc.data().profileImageURL);
+        setProfileImage(userDoc.data().profileImageURL);
+        onImageChange(userDoc.data().profileImageURL);
+      } else {
+        console.log('No profile image found in Firebase');
+        setProfileImage(null);
+        onImageChange(null);
+      }
+    } catch (error) {
+      console.error('Error loading profile image from Firebase:', error);
+      setProfileImage(null);
+      onImageChange(null);
+    }
+  };
 
   const pickImage = async () => {
     try {

@@ -86,7 +86,7 @@ export default function ImageFeed({
             id: uploadResult.postId,
             imageURL: uploadResult.imageURL,
             timestamp: new Date().toLocaleString(),
-            storagePath: `feed-images/${authUser.uid}/${Date.now()}.jpg`,
+            storagePath: uploadResult.storagePath, // Use the actual storage path from Firebase
           };
           
           setImages(prevImages => [newImage, ...prevImages]);
@@ -152,7 +152,7 @@ export default function ImageFeed({
             ) : (
               <Text style={{
                 color: '#ffffff',
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: '600',
                 textAlign: 'center',
               }}>
@@ -174,7 +174,7 @@ export default function ImageFeed({
           }}>
             <Text style={{
               color: '#ffffff',
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: '600',
               textAlign: 'center',
             }}>
