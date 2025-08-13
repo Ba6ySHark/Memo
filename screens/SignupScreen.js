@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  Alert,
   ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { signupStyles } from '../styles/SignupScreen.styles';
+import { useAuth } from '../contexts/AuthContext';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 import {
   GlassInput,
   GradientButton,
@@ -14,6 +15,7 @@ import {
   BackgroundCircles,
   ScreenHeader,
   NavigationLink,
+  CustomAlert,
 } from './components';
 
 export default function SignupScreen({ navigation }) {
@@ -22,29 +24,41 @@ export default function SignupScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { signUp } = useAuth();
+  const { alertConfig, showError, showSuccess } = useCustomAlert();
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     if (!fullName || !email || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields');
+      showError('Error', 'Please fill in all fields');
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      showError('Error', 'Passwords do not match');
       return;
     }
 
     if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long');
+      showError('Error', 'Password must be at least 6 characters long');
       return;
     }
     
     setIsLoading(true);
-    // Simulate signup process
-    setTimeout(() => {
+    
+    try {
+      const result = await signUp(email, password, fullName);
+      
+      if (result.success) {
+        // Navigation to HomeScreen will be handled by the auth state change
+        // No success alert needed - user will be redirected automatically
+      } else {
+        showError('Error', result.message);
+      }
+    } catch (error) {
+      showError('Error', 'An unexpected error occurred. Please try again.');
+    } finally {
       setIsLoading(false);
-      Alert.alert('Success', 'Account created successfully!');
-    }, 2000);
+    }
   };
 
   return (
@@ -173,6 +187,9 @@ export default function SignupScreen({ navigation }) {
           </View>
         </AnimatedContainer>
       </ScrollView>
+
+      {/* Custom Alert */}
+      <CustomAlert {...alertConfig} />
     </LinearGradient>
   );
 } 

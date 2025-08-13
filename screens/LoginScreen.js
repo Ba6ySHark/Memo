@@ -3,11 +3,12 @@ import {
   View,
   TouchableOpacity,
   Text,
-  Alert,
   ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { loginStyles } from '../styles/LoginScreen.styles';
+import { useAuth } from '../contexts/AuthContext';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 import {
   GlassInput,
   GradientButton,
@@ -15,25 +16,66 @@ import {
   BackgroundCircles,
   ScreenHeader,
   NavigationLink,
+  CustomAlert,
 } from './components';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { signIn, resetPassword } = useAuth();
+  const { alertConfig, showError, showSuccess, showConfirm } = useCustomAlert();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      showError('Error', 'Please fill in all fields');
       return;
     }
     
     setIsLoading(true);
-    // Simulate login process
-    setTimeout(() => {
+    
+    try {
+      const result = await signIn(email, password);
+      
+      if (result.success) {
+        // Navigation to HomeScreen will be handled by the auth state change
+        // No success alert needed - user will be redirected automatically
+      } else {
+        console.log('Login failed:', result); // Debug log
+        showError('Error', result.message);
+      }
+    } catch (error) {
+      console.log('Login error:', error); // Debug log
+      showError('Error', 'An unexpected error occurred. Please try again.');
+    } finally {
       setIsLoading(false);
-      Alert.alert('Success', 'Login successful!');
-    }, 2000);
+    }
+  };
+
+  const handleForgotPassword = () => {
+    if (!email) {
+      showError('Error', 'Please enter your email address first');
+      return;
+    }
+    
+    showConfirm({
+      title: 'Reset Password',
+      message: `Send password reset email to ${email}?`,
+      confirmText: 'Send',
+      onConfirm: async () => {
+        try {
+          const result = await resetPassword(email);
+          if (result.success) {
+            // Password reset email sent successfully - no need for success alert
+            // User will receive the email
+          } else {
+            showError('Error', result.message);
+          }
+        } catch (error) {
+          showError('Error', 'Failed to send reset email. Please try again.');
+        }
+      },
+    });
   };
 
   return (
@@ -99,7 +141,7 @@ export default function LoginScreen({ navigation }) {
 
             {/* Forgot Password */}
             <AnimatedContainer>
-              <TouchableOpacity style={loginStyles.forgotPassword}>
+              <TouchableOpacity style={loginStyles.forgotPassword} onPress={handleForgotPassword}>
                 <Text style={loginStyles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
             </AnimatedContainer>
@@ -130,6 +172,9 @@ export default function LoginScreen({ navigation }) {
           </View>
         </AnimatedContainer>
       </ScrollView>
+
+      {/* Custom Alert */}
+      <CustomAlert {...alertConfig} />
     </LinearGradient>
   );
 } 
