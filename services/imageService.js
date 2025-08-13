@@ -261,5 +261,59 @@ export const imageService = {
         message: `Failed to load feed: ${error.message}`
       };
     }
+  },
+
+  // Search users by display name
+  async searchUsers(searchTerm) {
+    try {
+      console.log('Searching for users with term:', searchTerm);
+      
+      if (!searchTerm || searchTerm.trim().length === 0) {
+        return {
+          success: true,
+          users: []
+        };
+      }
+      
+      // Get all users and filter by display name
+      const q = query(collection(db, 'users'));
+      const querySnapshot = await getDocs(q);
+      const users = [];
+      
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        if (userData.displayName) {
+          // Case-insensitive search
+          const displayName = userData.displayName.toLowerCase();
+          const searchLower = searchTerm.toLowerCase();
+          
+          if (displayName.includes(searchLower)) {
+            users.push({
+              id: doc.id,
+              displayName: userData.displayName,
+              email: userData.email,
+              profileImageURL: userData.profileImageURL || null,
+              updatedAt: userData.updatedAt?.toDate?.() || null,
+            });
+          }
+        }
+      });
+      
+      // Sort by display name
+      users.sort((a, b) => a.displayName.localeCompare(b.displayName));
+      
+      console.log('User search completed, found:', users.length, 'users');
+      return {
+        success: true,
+        users: users
+      };
+    } catch (error) {
+      console.error('User search error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: `Failed to search users: ${error.message}`
+      };
+    }
   }
 }; 
