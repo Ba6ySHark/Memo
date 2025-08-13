@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   ScrollView,
@@ -18,11 +18,13 @@ import {
   SearchBar,
   ImageFeed,
 } from './components';
+import ScrollableBackgroundCircles from './components/ScrollableBackgroundCircles';
 
 export default function HomeScreen() {
   const { user, signOut } = useAuth();
   const { alertConfig, showConfirm, showError } = useCustomAlert();
   const insets = useSafeAreaInsets();
+  const [scrollY, setScrollY] = useState(0);
 
   const handleSignOut = async () => {
     showConfirm({
@@ -66,13 +68,21 @@ export default function HomeScreen() {
     }
   };
 
+  const handleScroll = (event) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setScrollY(offsetY);
+  };
+
   return (
     <LinearGradient
       colors={['#000000', '#1a1a1a', '#000000']}
       style={homeStyles.gradient}
     >
+      {/* Background Circles */}
+      <ScrollableBackgroundCircles scrollY={scrollY} />
+      
       {/* Fixed Search Bar */}
-      <View style={[homeStyles.searchContainer, { paddingTop: insets.top + 20 }]}>
+      <View style={[homeStyles.searchContainer, { paddingTop: insets.top + 20, zIndex: 1 }]}>
         <SearchBar
           placeholder="Search users..."
           onSearch={handleSearch}
@@ -81,9 +91,11 @@ export default function HomeScreen() {
 
       {/* Scrollable Content */}
       <ScrollView 
-        style={homeStyles.scrollView}
+        style={[homeStyles.scrollView, { zIndex: 1 }]}
         contentContainerStyle={homeStyles.scrollContent}
         showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
         {/* Profile Section */}
         <View style={homeStyles.profileSection}>
