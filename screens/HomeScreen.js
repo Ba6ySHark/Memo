@@ -1,18 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomAlert } from '../hooks/useCustomAlert';
-import CustomAlert from './components/CustomAlert';
+import { homeStyles } from '../styles/HomeScreen.styles';
+import { imageService } from '../services/imageService';
+import {
+  ScreenHeader,
+  GradientButton,
+  UserInfo,
+  CustomAlert,
+  ProfilePicture,
+  SearchBar,
+  ImageFeed,
+} from './components';
+import ScrollableBackgroundCircles from './components/ScrollableBackgroundCircles';
 
 export default function HomeScreen() {
   const { user, signOut } = useAuth();
-  const { alertConfig, showConfirm, showSuccess, showError } = useCustomAlert();
+  const { alertConfig, showConfirm, showError } = useCustomAlert();
+  const insets = useSafeAreaInsets();
+  const [scrollY, setScrollY] = useState(0);
 
   const handleSignOut = async () => {
     showConfirm({
@@ -31,122 +43,92 @@ export default function HomeScreen() {
     });
   };
 
+  const handleSearch = (searchTerm) => {
+    // Handle search functionality
+    console.log('Searching for:', searchTerm);
+  };
+
+  const handleImagePublish = (image) => {
+    // Handle image publish
+    console.log('Image published:', image);
+  };
+
+  const handleProfileImageChange = (imageUri) => {
+    // Handle profile image change
+    console.log('Profile image changed:', imageUri);
+  };
+
+  const testFirebaseConnection = async () => {
+    console.log('Testing Firebase connection...');
+    const result = await imageService.testFirebaseConnection();
+    if (result.success) {
+      console.log('Firebase connection test successful');
+    } else {
+      console.error('Firebase connection test failed:', result.error);
+    }
+  };
+
+  const handleScroll = (event) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setScrollY(offsetY);
+  };
+
   return (
     <LinearGradient
       colors={['#000000', '#1a1a1a', '#000000']}
-      style={styles.gradient}
+      style={homeStyles.gradient}
     >
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Welcome!</Text>
-          <Text style={styles.subtitle}>
-            {user?.displayName || user?.email}
-          </Text>
-        </View>
+      {/* Background Circles */}
+      <ScrollableBackgroundCircles scrollY={scrollY} />
+      
+      {/* Fixed Search Bar */}
+      <View style={[homeStyles.searchContainer, { paddingTop: insets.top + 20, zIndex: 1 }]}>
+        <SearchBar
+          placeholder="Search users..."
+          onSearch={handleSearch}
+        />
+      </View>
 
-        <View style={styles.content}>
-          <Text style={styles.message}>
-            You have successfully signed in to your account.
-          </Text>
+      {/* Scrollable Content */}
+      <ScrollView 
+        style={[homeStyles.scrollView, { zIndex: 1 }]}
+        contentContainerStyle={homeStyles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      >
+        {/* Profile Section */}
+        <View style={homeStyles.profileSection}>
+          <ProfilePicture
+            user={user}
+            style={homeStyles.profilePicture}
+            imageStyle={homeStyles.profilePicture}
+            onImageChange={handleProfileImageChange}
+            onDeleteConfirm={showConfirm}
+          />
           
-          <View style={styles.userInfo}>
-            <Text style={styles.infoLabel}>Email:</Text>
-            <Text style={styles.infoValue}>{user?.email}</Text>
-            
-            {user?.displayName && (
-              <>
-                <Text style={styles.infoLabel}>Name:</Text>
-                <Text style={styles.infoValue}>{user.displayName}</Text>
-              </>
-            )}
-            
-            <Text style={styles.infoLabel}>User ID:</Text>
-            <Text style={styles.infoValue}>{user?.uid}</Text>
+          <View style={homeStyles.profileInfo}>
+            <UserInfo
+              user={user}
+              style={homeStyles.userInfo}
+              labelStyle={homeStyles.infoLabel}
+              valueStyle={homeStyles.infoValue}
+            />
           </View>
         </View>
 
-        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-          <LinearGradient
-            colors={['#667eea', '#764ba2']}
-            style={styles.buttonGradient}
-          >
-            <Text style={styles.signOutText}>Sign Out</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+        {/* Image Feed with Buttons */}
+        <View style={homeStyles.feedContainer}>
+          <ImageFeed
+            onImagePublish={handleImagePublish}
+            onSignOut={handleSignOut}
+            onDeleteConfirm={showConfirm}
+          />
+        </View>
+      </ScrollView>
 
       {/* Custom Alert */}
       <CustomAlert {...alertConfig} />
     </LinearGradient>
   );
-}
-
-const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 50,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
-  content: {
-    width: '100%',
-    alignItems: 'center',
-    marginBottom: 50,
-  },
-  message: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
-    textAlign: 'center',
-    marginBottom: 30,
-  },
-  userInfo: {
-    width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 15,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  infoLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.7)',
-    marginTop: 10,
-  },
-  infoValue: {
-    fontSize: 16,
-    color: '#ffffff',
-    marginBottom: 5,
-  },
-  signOutButton: {
-    borderRadius: 15,
-    overflow: 'hidden',
-    width: '100%',
-  },
-  buttonGradient: {
-    paddingVertical: 15,
-    alignItems: 'center',
-  },
-  signOutText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-}); 
+} 
