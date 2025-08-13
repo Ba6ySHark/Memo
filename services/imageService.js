@@ -147,6 +147,7 @@ export const imageService = {
         success: true,
         imageURL: downloadURL,
         postId: feedDoc.id,
+        storagePath: `feed-images/${userId}/${timestamp}.jpg`,
         message: 'Image published successfully!'
       };
     } catch (error) {
