@@ -53,7 +53,17 @@ export default function SearchBar({
           paddingVertical: 8,
           borderRadius: 15,
           backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          flexDirection: 'row',
+          alignItems: 'center',
         }}>
+          <Text style={{
+            color: '#ffffff',
+            fontSize: 14,
+            fontWeight: '600',
+            marginRight: 5,
+          }}>
+            🔍
+          </Text>
           <Text style={{
             color: '#ffffff',
             fontSize: 14,
