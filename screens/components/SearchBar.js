@@ -18,6 +18,7 @@ export default function SearchBar({
   onSearch = () => {},
   style = {},
   inputStyle = {},
+  navigation = null, // Add navigation prop
 }) {
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -113,8 +114,18 @@ export default function SearchBar({
 
   const handleUserSelect = (user) => {
     console.log('Selected user:', user);
-    // You can implement user selection logic here
-    // For example, navigate to user profile, send message, etc.
+    
+    // Navigate to user profile screen
+    if (navigation) {
+      navigation.navigate('UserProfile', {
+        userId: user.id,
+        displayName: user.displayName,
+        email: user.email,
+        profileImageURL: user.profileImageURL,
+      });
+    }
+    
+    // Close search results
     collapseSearch();
     setSearchText('');
   };

@@ -16,7 +16,8 @@ export default function ProfilePicture({
   style = {}, 
   imageStyle = {}, 
   onImageChange = () => {},
-  onDeleteConfirm = () => {}
+  onDeleteConfirm = () => {},
+  readOnly = false // Disable editing for other users' profiles
 }) {
   const [profileImage, setProfileImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,6 +59,11 @@ export default function ProfilePicture({
   };
 
   const pickImage = async () => {
+    // Don't allow picking in read-only mode
+    if (readOnly) {
+      return;
+    }
+
     try {
       setIsLoading(true);
       console.log('Starting profile image picker...');
@@ -107,6 +113,11 @@ export default function ProfilePicture({
   };
 
   const deleteProfileImage = () => {
+    // Don't allow deleting in read-only mode
+    if (readOnly) {
+      return;
+    }
+
     onDeleteConfirm({
       title: 'Delete Profile Picture',
       message: 'Are you sure you want to delete your profile picture?',
@@ -133,7 +144,7 @@ export default function ProfilePicture({
 
   return (
     <View style={style}>
-      <TouchableOpacity onPress={pickImage} disabled={isLoading}>
+      <TouchableOpacity onPress={pickImage} disabled={isLoading || readOnly}>
         {profileImage ? (
           <Image
             source={{ uri: profileImage }}

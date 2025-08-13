@@ -17,24 +17,29 @@ export default function ImageFeed({
   containerStyle = {},
   onImagePublish = () => {},
   onSignOut = () => {},
-  onDeleteConfirm = () => {}
+  onDeleteConfirm = () => {},
+  userId = null, // Allow passing a specific user ID
+  readOnly = false // Disable editing for other users' profiles
 }) {
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const { user: authUser } = useAuth();
 
+  // Use provided userId or fall back to current user
+  const targetUserId = userId || authUser?.uid;
+
   // Load user's feed on component mount
   useEffect(() => {
-    if (authUser?.uid) {
+    if (targetUserId) {
       loadUserFeed();
     }
-  }, [authUser]);
+  }, [targetUserId]);
 
   const loadUserFeed = async () => {
     try {
       setIsLoading(true);
-      const result = await imageService.getUserFeed(authUser.uid);
+      const result = await imageService.getUserFeed(targetUserId);
       
       if (result.success) {
         setImages(result.feed);
@@ -49,6 +54,11 @@ export default function ImageFeed({
   };
 
   const pickAndPublishImage = async () => {
+    // Don't allow publishing in read-only mode
+    if (readOnly) {
+      return;
+    }
+
     try {
       setIsUploading(true);
       console.log('Starting image picker...');
@@ -106,6 +116,11 @@ export default function ImageFeed({
   };
 
   const deleteImage = (imageId, storagePath) => {
+    // Don't allow deleting in read-only mode
+    if (readOnly) {
+      return;
+    }
+
     onDeleteConfirm({
       title: 'Delete Image',
       message: 'Are you sure you want to delete this image?',
@@ -128,61 +143,63 @@ export default function ImageFeed({
 
   return (
     <View style={style}>
-      {/* Buttons Container */}
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 20,
-        width: '100%',
-      }}>
-        {/* Publish Button */}
-        <TouchableOpacity onPress={pickAndPublishImage} disabled={isUploading}>
-          <BlurView intensity={20} style={{
-            borderRadius: 15,
-            borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.2)',
-            overflow: 'hidden',
-            paddingHorizontal: 30,
-            paddingVertical: 15,
-            opacity: isUploading ? 0.7 : 1,
-          }}>
-            {isUploading ? (
-              <ActivityIndicator color="#ffffff" size="small" />
-            ) : (
+      {/* Buttons Container - Only show if not read-only */}
+      {!readOnly && (
+        <View style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 20,
+          width: '100%',
+        }}>
+          {/* Publish Button */}
+          <TouchableOpacity onPress={pickAndPublishImage} disabled={isUploading}>
+            <BlurView intensity={20} style={{
+              borderRadius: 15,
+              borderWidth: 1,
+              borderColor: 'rgba(255, 255, 255, 0.2)',
+              overflow: 'hidden',
+              paddingHorizontal: 30,
+              paddingVertical: 15,
+              opacity: isUploading ? 0.7 : 1,
+            }}>
+              {isUploading ? (
+                <ActivityIndicator color="#ffffff" size="small" />
+              ) : (
+                <Text style={{
+                  color: '#ffffff',
+                  fontSize: 14,
+                  fontWeight: '600',
+                  textAlign: 'center',
+                }}>
+                  Publish Image
+                </Text>
+              )}
+            </BlurView>
+          </TouchableOpacity>
+
+          {/* Sign Out Button */}
+          <TouchableOpacity onPress={onSignOut}>
+            <BlurView intensity={20} style={{
+              borderRadius: 15,
+              borderWidth: 1,
+              borderColor: 'rgba(255, 255, 255, 0.2)',
+              overflow: 'hidden',
+              paddingHorizontal: 30,
+              paddingVertical: 15,
+            }}>
               <Text style={{
                 color: '#ffffff',
                 fontSize: 14,
                 fontWeight: '600',
                 textAlign: 'center',
               }}>
-                Publish Image
+                Sign Out
               </Text>
-            )}
-          </BlurView>
-        </TouchableOpacity>
-
-        {/* Sign Out Button */}
-        <TouchableOpacity onPress={onSignOut}>
-          <BlurView intensity={20} style={{
-            borderRadius: 15,
-            borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.2)',
-            overflow: 'hidden',
-            paddingHorizontal: 30,
-            paddingVertical: 15,
-          }}>
-            <Text style={{
-              color: '#ffffff',
-              fontSize: 14,
-              fontWeight: '600',
-              textAlign: 'center',
-            }}>
-              Sign Out
-            </Text>
-          </BlurView>
-        </TouchableOpacity>
-      </View>
+            </BlurView>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Images Feed */}
       <View>
@@ -197,7 +214,7 @@ export default function ImageFeed({
               fontSize: 16,
               marginTop: 10,
             }}>
-              Loading your feed...
+              Loading feed...
             </Text>
           </View>
         ) : images.length === 0 ? (
@@ -210,7 +227,7 @@ export default function ImageFeed({
               fontSize: 16,
               textAlign: 'center',
             }}>
-              No images published yet.{'\n'}Tap "Publish Image" to get started!
+              {readOnly ? 'No images published yet.' : 'No images published yet.\nTap "Publish Image" to get started!'}
             </Text>
           </View>
         ) : (

@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
 import HomeScreen from './screens/HomeScreen';
+import UserProfileScreen from './screens/UserProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -48,7 +49,10 @@ function Navigation() {
       >
         {user ? (
           // Authenticated stack
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <>
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+          </>
         ) : (
           // Unauthenticated stack
           <>

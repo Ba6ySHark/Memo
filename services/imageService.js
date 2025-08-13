@@ -1,6 +1,7 @@
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { doc, setDoc, deleteDoc, collection, addDoc, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { doc, setDoc, deleteDoc, collection, addDoc, query, where, orderBy, getDocs, getDoc } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
+import { auth } from '../config/firebase';
 
 export const imageService = {
   // Test Firebase connectivity
@@ -259,6 +260,57 @@ export const imageService = {
         success: false,
         error: error.message,
         message: `Failed to load feed: ${error.message}`
+      };
+    }
+  },
+
+  // Get user profile data
+  async getUserProfile(userId) {
+    try {
+      console.log('Getting user profile for:', userId);
+      
+      // Check if user is authenticated
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        console.error('User not authenticated');
+        return {
+          success: false,
+          error: 'User not authenticated',
+          message: 'Please sign in to view profiles'
+        };
+      }
+      
+      // Get user document from Firestore
+      const userDoc = await getDoc(doc(db, 'users', userId));
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        console.log('User profile loaded successfully');
+        return {
+          success: true,
+          user: {
+            id: userDoc.id,
+            displayName: userData.displayName,
+            email: userData.email,
+            profileImageURL: userData.profileImageURL || null,
+            createdAt: userData.createdAt?.toDate?.() || null,
+            updatedAt: userData.updatedAt?.toDate?.() || null,
+          }
+        };
+      } else {
+        console.error('User not found');
+        return {
+          success: false,
+          error: 'User not found',
+          message: 'User profile not found'
+        };
+      }
+    } catch (error) {
+      console.error('Get user profile error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: `Failed to load user profile: ${error.message}`
       };
     }
   },

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -20,7 +20,7 @@ import {
 } from './components';
 import ScrollableBackgroundCircles from './components/ScrollableBackgroundCircles';
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const { user, signOut } = useAuth();
   const { alertConfig, showConfirm, showError } = useCustomAlert();
   const insets = useSafeAreaInsets();
@@ -68,6 +68,23 @@ export default function HomeScreen() {
     }
   };
 
+  const syncUserToFirestore = async () => {
+    console.log('Syncing user to Firestore...');
+    const result = await imageService.syncCurrentUserToFirestore();
+    if (result.success) {
+      console.log('User synced to Firestore successfully');
+    } else {
+      console.error('Failed to sync user to Firestore:', result.error);
+    }
+  };
+
+  // Sync user to Firestore when component mounts
+  useEffect(() => {
+    if (user?.uid) {
+      syncUserToFirestore();
+    }
+  }, [user]);
+
   const handleScroll = (event) => {
     const offsetY = event.nativeEvent.contentOffset.y;
     setScrollY(offsetY);
@@ -86,6 +103,7 @@ export default function HomeScreen() {
         <SearchBar
           placeholder="Search users..."
           onSearch={handleSearch}
+          navigation={navigation}
         />
       </View>
 
