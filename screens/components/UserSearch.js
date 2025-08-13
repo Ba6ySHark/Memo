@@ -180,9 +180,13 @@ export default function UserSearch({
             }}>
               <Text style={{
                 color: 'rgba(255, 255, 255, 0.5)',
-                fontSize: 10,
+                fontSize: 12,
+                lineHeight: 12,
+                textAlign: 'center',
+                includeFontPadding: false,
+                marginTop: -1, // Fine-tune vertical position
               }}>
-                →
+                ›
               </Text>
             </View>
           </BlurView>
