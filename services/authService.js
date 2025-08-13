@@ -104,13 +104,21 @@ export const authService = {
       case 'auth/weak-password':
         return 'Password should be at least 6 characters long.';
       case 'auth/user-not-found':
-        return 'No account found with this email address.';
+        return 'Invalid email or password. Please check your credentials and try again.';
       case 'auth/wrong-password':
-        return 'Incorrect password. Please try again.';
+        return 'Invalid email or password. Please check your credentials and try again.';
+      case 'auth/invalid-credential':
+        return 'Invalid email or password. Please check your credentials and try again.';
+      case 'auth/user-disabled':
+        return 'This account has been disabled. Please contact support.';
       case 'auth/too-many-requests':
         return 'Too many failed attempts. Please try again later.';
       case 'auth/network-request-failed':
-        return 'Network error. Please check your connection.';
+        return 'Network error. Please check your connection and try again.';
+      case 'auth/operation-not-allowed':
+        return 'Email/password sign in is not enabled. Please contact support.';
+      case 'auth/requires-recent-login':
+        return 'Please sign in again to complete this action.';
       default:
         return 'An error occurred. Please try again.';
     }
