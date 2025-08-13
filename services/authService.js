@@ -5,7 +5,8 @@ import {
   sendPasswordResetEmail,
   updateProfile 
 } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../config/firebase';
 
 export const authService = {
   // Sign up with email and password
@@ -16,6 +17,14 @@ export const authService = {
       // Update user profile with full name
       await updateProfile(userCredential.user, {
         displayName: fullName
+      });
+      
+      // Save user data to Firestore for search functionality
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        displayName: fullName,
+        email: email,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
       
       return {

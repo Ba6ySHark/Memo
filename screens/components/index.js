@@ -9,4 +9,5 @@ export { default as CustomAlert } from './CustomAlert';
 export { default as UserInfo } from './UserInfo';
 export { default as ProfilePicture } from './ProfilePicture';
 export { default as SearchBar } from './SearchBar';
-export { default as ImageFeed } from './ImageFeed'; 
+export { default as ImageFeed } from './ImageFeed';
+export { default as UserSearch } from './UserSearch'; 

@@ -16,30 +16,35 @@ export default function ProfilePicture({
   style = {}, 
   imageStyle = {}, 
   onImageChange = () => {},
-  onDeleteConfirm = () => {}
+  onDeleteConfirm = () => {},
+  readOnly = false, // Disable editing for other users' profiles
+  userId = null // Allow passing a specific user ID
 }) {
   const [profileImage, setProfileImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { user: authUser } = useAuth();
 
+  // Use provided userId or fall back to current user
+  const targetUserId = userId || authUser?.uid;
+
   // Load profile image from Firebase when component mounts or user changes
   useEffect(() => {
-    if (authUser?.uid) {
+    if (targetUserId) {
       loadProfileImageFromFirebase();
     } else {
       setProfileImage(null);
     }
-  }, [authUser?.uid]);
+  }, [targetUserId]);
 
   const loadProfileImageFromFirebase = async () => {
     try {
-      console.log('Loading profile image from Firebase for user:', authUser.uid);
+      console.log('Loading profile image from Firebase for user:', targetUserId);
       
       // Get user document from Firestore to check for profile image URL
       const { db } = await import('../../config/firebase');
       const { doc, getDoc } = await import('firebase/firestore');
       
-      const userDoc = await getDoc(doc(db, 'users', authUser.uid));
+      const userDoc = await getDoc(doc(db, 'users', targetUserId));
       
       if (userDoc.exists() && userDoc.data().profileImageURL) {
         console.log('Profile image found:', userDoc.data().profileImageURL);
@@ -58,6 +63,11 @@ export default function ProfilePicture({
   };
 
   const pickImage = async () => {
+    // Don't allow picking in read-only mode
+    if (readOnly) {
+      return;
+    }
+
     try {
       setIsLoading(true);
       console.log('Starting profile image picker...');
@@ -107,6 +117,11 @@ export default function ProfilePicture({
   };
 
   const deleteProfileImage = () => {
+    // Don't allow deleting in read-only mode
+    if (readOnly) {
+      return;
+    }
+
     onDeleteConfirm({
       title: 'Delete Profile Picture',
       message: 'Are you sure you want to delete your profile picture?',
@@ -133,7 +148,7 @@ export default function ProfilePicture({
 
   return (
     <View style={style}>
-      <TouchableOpacity onPress={pickImage} disabled={isLoading}>
+      <TouchableOpacity onPress={pickImage} disabled={isLoading || readOnly}>
         {profileImage ? (
           <Image
             source={{ uri: profileImage }}
