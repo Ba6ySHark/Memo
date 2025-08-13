@@ -25,13 +25,21 @@ export default function SearchBar({
     <View style={style}>
       <BlurView intensity={20} style={{
         borderRadius: 25,
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.2)',
+        borderWidth: 0.5,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
         overflow: 'hidden',
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
       }}>
         <TextInput
           style={[{

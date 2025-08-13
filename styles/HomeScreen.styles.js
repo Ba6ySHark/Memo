@@ -6,12 +6,16 @@ export const homeStyles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
   searchContainer: {
-    marginBottom: 30,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
   },
   profileSection: {
     flexDirection: 'row',

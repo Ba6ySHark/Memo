@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { homeStyles } from '../styles/HomeScreen.styles';
+import { imageService } from '../services/imageService';
 import {
   ScreenHeader,
   GradientButton,
@@ -55,20 +56,35 @@ export default function HomeScreen() {
     console.log('Profile image changed:', imageUri);
   };
 
+  const testFirebaseConnection = async () => {
+    console.log('Testing Firebase connection...');
+    const result = await imageService.testFirebaseConnection();
+    if (result.success) {
+      console.log('Firebase connection test successful');
+    } else {
+      console.error('Firebase connection test failed:', result.error);
+    }
+  };
+
   return (
     <LinearGradient
       colors={['#000000', '#1a1a1a', '#000000']}
       style={homeStyles.gradient}
     >
-      <View style={[homeStyles.container, { paddingTop: insets.top + 20 }]}>
-        {/* Search Bar */}
-        <View style={homeStyles.searchContainer}>
-          <SearchBar
-            placeholder="Search users..."
-            onSearch={handleSearch}
-          />
-        </View>
+      {/* Fixed Search Bar */}
+      <View style={[homeStyles.searchContainer, { paddingTop: insets.top + 20 }]}>
+        <SearchBar
+          placeholder="Search users..."
+          onSearch={handleSearch}
+        />
+      </View>
 
+      {/* Scrollable Content */}
+      <ScrollView 
+        style={homeStyles.scrollView}
+        contentContainerStyle={homeStyles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Profile Section */}
         <View style={homeStyles.profileSection}>
           <ProfilePicture
@@ -76,6 +92,7 @@ export default function HomeScreen() {
             style={homeStyles.profilePicture}
             imageStyle={homeStyles.profilePicture}
             onImageChange={handleProfileImageChange}
+            onDeleteConfirm={showConfirm}
           />
           
           <View style={homeStyles.profileInfo}>
@@ -93,9 +110,10 @@ export default function HomeScreen() {
           <ImageFeed
             onImagePublish={handleImagePublish}
             onSignOut={handleSignOut}
+            onDeleteConfirm={showConfirm}
           />
         </View>
-      </View>
+      </ScrollView>
 
       {/* Custom Alert */}
       <CustomAlert {...alertConfig} />

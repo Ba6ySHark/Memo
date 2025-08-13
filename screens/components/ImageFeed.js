@@ -1,53 +1,129 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Image,
   TouchableOpacity,
   Text,
-  ScrollView,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import * as ImagePicker from 'expo-image-picker';
+import { imageService } from '../../services/imageService';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function ImageFeed({ 
   style = {}, 
   containerStyle = {},
   onImagePublish = () => {},
-  onSignOut = () => {}
+  onSignOut = () => {},
+  onDeleteConfirm = () => {}
 }) {
   const [images, setImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const { user: authUser } = useAuth();
+
+  // Load user's feed on component mount
+  useEffect(() => {
+    if (authUser?.uid) {
+      loadUserFeed();
+    }
+  }, [authUser]);
+
+  const loadUserFeed = async () => {
+    try {
+      setIsLoading(true);
+      const result = await imageService.getUserFeed(authUser.uid);
+      
+      if (result.success) {
+        setImages(result.feed);
+      } else {
+        console.error('Failed to load feed:', result.message);
+      }
+    } catch (error) {
+      console.error('Error loading feed:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const pickAndPublishImage = async () => {
     try {
+      setIsUploading(true);
+      console.log('Starting image picker...');
+      
       // Request permissions
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      console.log('Permission status:', status);
+      
       if (status !== 'granted') {
         Alert.alert('Permission needed', 'Please grant camera roll permissions to publish images.');
         return;
       }
 
       // Launch image picker
+      console.log('Launching image picker...');
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
       });
+      
+      console.log('Image picker result:', result);
 
       if (!result.canceled && result.assets[0]) {
-        const newImage = {
-          id: Date.now().toString(),
-          uri: result.assets[0].uri,
-          timestamp: new Date().toLocaleString(),
-        };
+        console.log('Image selected:', result.assets[0].uri);
         
-        setImages(prevImages => [newImage, ...prevImages]);
-        onImagePublish(newImage);
+        // Upload to Firebase
+        const uploadResult = await imageService.uploadFeedImage(authUser.uid, result.assets[0].uri);
+        console.log('Upload result:', uploadResult);
+        
+        if (uploadResult.success) {
+          // Add new image to the beginning of the feed
+          const newImage = {
+            id: uploadResult.postId,
+            imageURL: uploadResult.imageURL,
+            timestamp: new Date().toLocaleString(),
+            storagePath: `feed-images/${authUser.uid}/${Date.now()}.jpg`,
+          };
+          
+          setImages(prevImages => [newImage, ...prevImages]);
+          onImagePublish(newImage);
+        } else {
+          Alert.alert('Error', uploadResult.message);
+        }
+      } else {
+        console.log('Image picker was canceled or no image selected');
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to pick image. Please try again.');
+      console.error('Image picker error:', error);
+      Alert.alert('Error', `Failed to pick image: ${error.message}`);
+    } finally {
+      setIsUploading(false);
     }
+  };
+
+  const deleteImage = (imageId, storagePath) => {
+    onDeleteConfirm({
+      title: 'Delete Image',
+      message: 'Are you sure you want to delete this image?',
+      confirmText: 'Delete',
+      onConfirm: async () => {
+        try {
+          const result = await imageService.deleteFeedImage(imageId, storagePath);
+          
+          if (result.success) {
+            setImages(prevImages => prevImages.filter(img => img.id !== imageId));
+          } else {
+            Alert.alert('Error', result.message);
+          }
+        } catch (error) {
+          Alert.alert('Error', 'Failed to delete image. Please try again.');
+        }
+      },
+    });
   };
 
   return (
@@ -61,7 +137,7 @@ export default function ImageFeed({
         width: '100%',
       }}>
         {/* Publish Button */}
-        <TouchableOpacity onPress={pickAndPublishImage}>
+        <TouchableOpacity onPress={pickAndPublishImage} disabled={isUploading}>
           <BlurView intensity={20} style={{
             borderRadius: 15,
             borderWidth: 1,
@@ -69,15 +145,20 @@ export default function ImageFeed({
             overflow: 'hidden',
             paddingHorizontal: 30,
             paddingVertical: 15,
+            opacity: isUploading ? 0.7 : 1,
           }}>
-            <Text style={{
-              color: '#ffffff',
-              fontSize: 16,
-              fontWeight: '600',
-              textAlign: 'center',
-            }}>
-              📷 Publish Image
-            </Text>
+            {isUploading ? (
+              <ActivityIndicator color="#ffffff" size="small" />
+            ) : (
+              <Text style={{
+                color: '#ffffff',
+                fontSize: 16,
+                fontWeight: '600',
+                textAlign: 'center',
+              }}>
+                Publish Image
+              </Text>
+            )}
           </BlurView>
         </TouchableOpacity>
 
@@ -97,20 +178,29 @@ export default function ImageFeed({
               fontWeight: '600',
               textAlign: 'center',
             }}>
-              🚪 Sign Out
+              Sign Out
             </Text>
           </BlurView>
         </TouchableOpacity>
       </View>
 
       {/* Images Feed */}
-      <ScrollView 
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingBottom: 20,
-        }}
-      >
-        {images.length === 0 ? (
+      <View>
+        {isLoading ? (
+          <View style={{
+            alignItems: 'center',
+            paddingVertical: 40,
+          }}>
+            <ActivityIndicator color="#ffffff" size="large" />
+            <Text style={{
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: 16,
+              marginTop: 10,
+            }}>
+              Loading your feed...
+            </Text>
+          </View>
+        ) : images.length === 0 ? (
           <View style={{
             alignItems: 'center',
             paddingVertical: 40,
@@ -137,7 +227,7 @@ export default function ImageFeed({
                 overflow: 'hidden',
               }}>
                 <Image
-                  source={{ uri: image.uri }}
+                  source={{ uri: image.imageURL }}
                   style={{
                     width: '100%',
                     height: 200,
@@ -146,6 +236,9 @@ export default function ImageFeed({
                 />
                 <View style={{
                   padding: 15,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                 }}>
                   <Text style={{
                     color: 'rgba(255, 255, 255, 0.7)',
@@ -153,12 +246,26 @@ export default function ImageFeed({
                   }}>
                     Published: {image.timestamp}
                   </Text>
+                  <TouchableOpacity 
+                    onPress={() => deleteImage(image.id, image.storagePath)}
+                    style={{
+                      padding: 8,
+                      borderRadius: 20,
+                    }}
+                  >
+                    <Text style={{
+                      color: '#ff6b6b',
+                      fontSize: 16,
+                    }}>
+                      🗑️
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </BlurView>
             </View>
           ))
         )}
-      </ScrollView>
+      </View>
     </View>
   );
 } 
