@@ -194,8 +194,7 @@ export const imageService = {
       
       const q = query(
         collection(db, 'feed'),
-        where('userId', '==', userId),
-        orderBy('timestamp', 'desc')
+        where('userId', '==', userId)
       );
       
       const querySnapshot = await getDocs(q);
@@ -208,6 +207,9 @@ export const imageService = {
           timestamp: doc.data().timestamp.toDate().toLocaleString(),
         });
       });
+      
+      // Sort by timestamp in descending order (newest first)
+      feed.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       
       console.log('Feed loaded successfully, count:', feed.length);
       return {
@@ -241,7 +243,7 @@ export const imageService = {
         feed.push({
           id: doc.id,
           ...doc.data(),
-          timestamp: doc.data().timestamp.toLocaleString(),
+          timestamp: doc.data().timestamp.toDate().toLocaleString(),
         });
       });
       
