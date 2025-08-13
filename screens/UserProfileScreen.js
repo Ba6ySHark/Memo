@@ -106,12 +106,29 @@ export default function UserProfileScreen({ route, navigation }) {
           <TouchableOpacity 
             onPress={handleGoBack}
             style={{
-              padding: 10,
-              borderRadius: 20,
+              paddingHorizontal: 15,
+              paddingVertical: 8,
+              borderRadius: 15,
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              flexDirection: 'row',
+              alignItems: 'center',
             }}
           >
-            <Text style={{ color: '#ffffff', fontSize: 18 }}>←</Text>
+            <Text style={{
+              color: '#ffffff',
+              fontSize: 14,
+              fontWeight: '600',
+              marginRight: 5,
+            }}>
+              ‹
+            </Text>
+            <Text style={{
+              color: '#ffffff',
+              fontSize: 14,
+              fontWeight: '600',
+            }}>
+              Back
+            </Text>
           </TouchableOpacity>
           
           <Text style={{
@@ -122,7 +139,7 @@ export default function UserProfileScreen({ route, navigation }) {
             {displayName}'s Profile
           </Text>
           
-          <View style={{ width: 40 }} />
+          <View style={{ width: 80 }} />
         </View>
       </View>
 
@@ -155,6 +172,7 @@ export default function UserProfileScreen({ route, navigation }) {
             onImageChange={handleProfileImageChange}
             onDeleteConfirm={() => {}}
             readOnly={true} // Make it read-only for other users
+            userId={userId} // Pass the specific user ID
           />
           
           <Text style={{

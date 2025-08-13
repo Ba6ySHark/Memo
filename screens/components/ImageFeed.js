@@ -263,20 +263,22 @@ export default function ImageFeed({
                   }}>
                     Published: {image.timestamp}
                   </Text>
-                  <TouchableOpacity 
-                    onPress={() => deleteImage(image.id, image.storagePath)}
-                    style={{
-                      padding: 8,
-                      borderRadius: 20,
-                    }}
-                  >
-                    <Text style={{
-                      color: '#ff6b6b',
-                      fontSize: 16,
-                    }}>
-                      🗑️
-                    </Text>
-                  </TouchableOpacity>
+                  {!readOnly && (
+                    <TouchableOpacity 
+                      onPress={() => deleteImage(image.id, image.storagePath)}
+                      style={{
+                        padding: 8,
+                        borderRadius: 20,
+                      }}
+                    >
+                      <Text style={{
+                        color: '#ff6b6b',
+                        fontSize: 16,
+                      }}>
+                        🗑️
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               </BlurView>
             </View>

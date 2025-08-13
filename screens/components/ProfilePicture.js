@@ -17,30 +17,34 @@ export default function ProfilePicture({
   imageStyle = {}, 
   onImageChange = () => {},
   onDeleteConfirm = () => {},
-  readOnly = false // Disable editing for other users' profiles
+  readOnly = false, // Disable editing for other users' profiles
+  userId = null // Allow passing a specific user ID
 }) {
   const [profileImage, setProfileImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { user: authUser } = useAuth();
 
+  // Use provided userId or fall back to current user
+  const targetUserId = userId || authUser?.uid;
+
   // Load profile image from Firebase when component mounts or user changes
   useEffect(() => {
-    if (authUser?.uid) {
+    if (targetUserId) {
       loadProfileImageFromFirebase();
     } else {
       setProfileImage(null);
     }
-  }, [authUser?.uid]);
+  }, [targetUserId]);
 
   const loadProfileImageFromFirebase = async () => {
     try {
-      console.log('Loading profile image from Firebase for user:', authUser.uid);
+      console.log('Loading profile image from Firebase for user:', targetUserId);
       
       // Get user document from Firestore to check for profile image URL
       const { db } = await import('../../config/firebase');
       const { doc, getDoc } = await import('firebase/firestore');
       
-      const userDoc = await getDoc(doc(db, 'users', authUser.uid));
+      const userDoc = await getDoc(doc(db, 'users', targetUserId));
       
       if (userDoc.exists() && userDoc.data().profileImageURL) {
         console.log('Profile image found:', userDoc.data().profileImageURL);
