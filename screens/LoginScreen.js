@@ -31,6 +31,13 @@ export default function LoginScreen({ navigation }) {
       showError('Error', 'Please fill in all fields');
       return;
     }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showError('Error', 'Please enter a valid email address');
+      return;
+    }
     
     setIsLoading(true);
     
@@ -55,6 +62,13 @@ export default function LoginScreen({ navigation }) {
   const handleForgotPassword = () => {
     if (!email) {
       showError('Error', 'Please enter your email address first');
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showError('Error', 'Please enter a valid email address');
       return;
     }
     

@@ -33,13 +33,20 @@ export default function SignupScreen({ navigation }) {
       return;
     }
 
-    if (password !== confirmPassword) {
-      showError('Error', 'Passwords do not match');
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showError('Error', 'Please enter a valid email address');
       return;
     }
 
     if (password.length < 8) {
       showError('Error', 'Password must be at least 8 characters long');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      showError('Error', 'Passwords do not match');
       return;
     }
     
