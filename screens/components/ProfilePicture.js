@@ -175,7 +175,7 @@ export default function ProfilePicture({
                 fontSize: 12,
                 textAlign: 'center',
               }}>
-                Tap to{'\n'}upload{'\n'}photo
+                {readOnly ? 'No photo' : 'Tap to\nupload\nphoto'}
               </Text>
             )}
           </View>
