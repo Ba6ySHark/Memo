@@ -29,7 +29,7 @@ A React Native app built with Expo featuring beautiful login and signup screens 
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/Ba6ySHark/Memo.git
 cd Memo
 ```
 
