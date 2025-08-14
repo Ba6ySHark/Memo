@@ -182,8 +182,8 @@ export default function ProfilePicture({
         )}
       </TouchableOpacity>
       
-      {/* Delete Button - Only show when profile image exists */}
-      {profileImage && !isLoading && (
+      {/* Delete Button - Only show when profile image exists and not in read-only mode */}
+      {profileImage && !isLoading && !readOnly && (
         <TouchableOpacity 
           onPress={deleteProfileImage}
           style={{
