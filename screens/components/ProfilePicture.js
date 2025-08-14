@@ -175,15 +175,15 @@ export default function ProfilePicture({
                 fontSize: 12,
                 textAlign: 'center',
               }}>
-                Tap to{'\n'}upload{'\n'}photo
+                {readOnly ? 'No photo' : 'Tap to\nupload\nphoto'}
               </Text>
             )}
           </View>
         )}
       </TouchableOpacity>
       
-      {/* Delete Button - Only show when profile image exists */}
-      {profileImage && !isLoading && (
+      {/* Delete Button - Only show when profile image exists and not in read-only mode */}
+      {profileImage && !isLoading && !readOnly && (
         <TouchableOpacity 
           onPress={deleteProfileImage}
           style={{

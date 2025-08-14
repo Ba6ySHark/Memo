@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { homeStyles } from '../styles/HomeScreen.styles';
 import { imageService } from '../services/imageService';
+import { searchService } from '../services/searchService';
 import {
   ScreenHeader,
   GradientButton,
@@ -70,11 +71,21 @@ export default function HomeScreen({ navigation }) {
 
   const syncUserToFirestore = async () => {
     console.log('Syncing user to Firestore...');
-    const result = await imageService.syncCurrentUserToFirestore();
+    const result = await searchService.syncCurrentUserToFirestore();
     if (result.success) {
       console.log('User synced to Firestore successfully');
     } else {
       console.error('Failed to sync user to Firestore:', result.error);
+    }
+  };
+
+  const syncAllUsersToFirestore = async () => {
+    console.log('Syncing all users to Firestore...');
+    const result = await searchService.syncAllUsersToFirestore();
+    if (result.success) {
+      console.log('All users synced to Firestore successfully');
+    } else {
+      console.error('Failed to sync all users to Firestore:', result.error);
     }
   };
 

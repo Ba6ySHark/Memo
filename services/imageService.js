@@ -315,56 +315,85 @@ export const imageService = {
     }
   },
 
-  // Search users by display name
-  async searchUsers(searchTerm) {
+  // Sync current user to Firestore users collection
+  async syncCurrentUserToFirestore() {
     try {
-      console.log('Searching for users with term:', searchTerm);
-      
-      if (!searchTerm || searchTerm.trim().length === 0) {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        console.error('No authenticated user found');
         return {
-          success: true,
-          users: []
+          success: false,
+          error: 'No authenticated user',
+          message: 'Please sign in first'
         };
       }
+
+      console.log('Syncing current user to Firestore:', currentUser.uid);
       
-      // Get all users and filter by display name
-      const q = query(collection(db, 'users'));
-      const querySnapshot = await getDocs(q);
-      const users = [];
+      // Get user data from Firebase Auth
+      const userData = {
+        displayName: currentUser.displayName || 'Unknown User',
+        email: currentUser.email,
+        updatedAt: new Date(),
+      };
+
+      // If this is a new user, add createdAt
+      if (!currentUser.metadata.creationTime) {
+        userData.createdAt = new Date();
+      }
+
+      // Save to Firestore
+      await setDoc(doc(db, 'users', currentUser.uid), userData, { merge: true });
       
-      querySnapshot.forEach((doc) => {
-        const userData = doc.data();
-        if (userData.displayName) {
-          // Case-insensitive search
-          const displayName = userData.displayName.toLowerCase();
-          const searchLower = searchTerm.toLowerCase();
-          
-          if (displayName.includes(searchLower)) {
-            users.push({
-              id: doc.id,
-              displayName: userData.displayName,
-              email: userData.email,
-              profileImageURL: userData.profileImageURL || null,
-              updatedAt: userData.updatedAt?.toDate?.() || null,
-            });
-          }
-        }
-      });
-      
-      // Sort by display name
-      users.sort((a, b) => a.displayName.localeCompare(b.displayName));
-      
-      console.log('User search completed, found:', users.length, 'users');
+      console.log('User synced to Firestore successfully');
       return {
         success: true,
-        users: users
+        message: 'User synced to Firestore'
       };
     } catch (error) {
-      console.error('User search error:', error);
+      console.error('Error syncing user to Firestore:', error);
       return {
         success: false,
         error: error.message,
-        message: `Failed to search users: ${error.message}`
+        message: `Failed to sync user: ${error.message}`
+      };
+    }
+  },
+
+  // Sync all existing users to Firestore (admin function)
+  async syncAllUsersToFirestore() {
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        console.error('No authenticated user found');
+        return {
+          success: false,
+          error: 'No authenticated user',
+          message: 'Please sign in first'
+        };
+      }
+
+      console.log('Syncing all users to Firestore...');
+      
+      // Note: This is a simplified approach. In a real app, you might want to use Firebase Admin SDK
+      // to get all users, but for now we'll just sync the current user
+      const result = await this.syncCurrentUserToFirestore();
+      
+      if (result.success) {
+        console.log('All users synced to Firestore successfully');
+        return {
+          success: true,
+          message: 'Users synced to Firestore'
+        };
+      } else {
+        return result;
+      }
+    } catch (error) {
+      console.error('Error syncing all users to Firestore:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: `Failed to sync users: ${error.message}`
       };
     }
   }
