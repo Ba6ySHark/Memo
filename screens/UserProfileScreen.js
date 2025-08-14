@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomAlert } from '../hooks/useCustomAlert';
-import { imageService } from '../services/imageService';
+import { searchService } from '../services/searchService';
 import {
   ScreenHeader,
   CustomAlert,
@@ -38,7 +38,7 @@ export default function UserProfileScreen({ route, navigation }) {
       setIsLoading(true);
       
       // Get user data from Firestore
-      const result = await imageService.getUserProfile(userId);
+      const result = await searchService.getUserProfile(userId);
       
       if (result.success) {
         setProfileUser(result.user);

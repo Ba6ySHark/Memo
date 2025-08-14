@@ -8,7 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { imageService } from '../../services/imageService';
+import { searchService } from '../../services/searchService';
 import UserSearch from './UserSearch';
 
 const { width, height } = Dimensions.get('window');
@@ -88,7 +88,7 @@ export default function SearchBar({
       }
       setErrorMessage('');
       
-      const result = await imageService.searchUsers(searchTerm);
+      const result = await searchService.searchUsers(searchTerm);
       
       if (result.success) {
         setSearchResults(result.users);
