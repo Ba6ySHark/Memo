@@ -456,10 +456,13 @@ export const imageService = {
       // Sort by display name
       users.sort((a, b) => a.displayName.localeCompare(b.displayName));
       
-      console.log('User search completed, found:', users.length, 'users');
+      // Limit results to 3 items
+      const limitedUsers = users.slice(0, 3);
+      
+      console.log('User search completed, found:', users.length, 'users, showing:', limitedUsers.length);
       return {
         success: true,
-        users: users
+        users: limitedUsers
       };
     } catch (error) {
       console.error('User search error:', error);
