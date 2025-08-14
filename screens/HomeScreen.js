@@ -78,6 +78,16 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
+  const syncAllUsersToFirestore = async () => {
+    console.log('Syncing all users to Firestore...');
+    const result = await imageService.syncAllUsersToFirestore();
+    if (result.success) {
+      console.log('All users synced to Firestore successfully');
+    } else {
+      console.error('Failed to sync all users to Firestore:', result.error);
+    }
+  };
+
   // Sync user to Firestore when component mounts
   useEffect(() => {
     if (user?.uid) {

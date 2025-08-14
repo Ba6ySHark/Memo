@@ -45,6 +45,20 @@ export const authService = {
   async signIn(email, password) {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
+      // Sync user to Firestore to ensure they are searchable
+      try {
+        await setDoc(doc(db, 'users', userCredential.user.uid), {
+          displayName: userCredential.user.displayName || 'Unknown User',
+          email: userCredential.user.email,
+          updatedAt: new Date(),
+        }, { merge: true });
+        console.log('User synced to Firestore during sign in');
+      } catch (syncError) {
+        console.error('Failed to sync user to Firestore during sign in:', syncError);
+        // Don't fail the sign in if Firestore sync fails
+      }
+      
       return {
         success: true,
         user: userCredential.user,
