@@ -12,6 +12,15 @@ export const authService = {
   // Sign up with email and password
   async signUp(email, password, fullName) {
     try {
+      // Client-side password validation
+      if (password.length < 8) {
+        return {
+          success: false,
+          error: 'weak-password',
+          message: 'Password should be at least 8 characters long.'
+        };
+      }
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
       // Update user profile with full name
@@ -125,7 +134,7 @@ export const authService = {
       case 'auth/invalid-email':
         return 'Please enter a valid email address.';
       case 'auth/weak-password':
-        return 'Password should be at least 6 characters long.';
+        return 'Password should be at least 8 characters long.';
       case 'auth/user-not-found':
         return 'Invalid email or password. Please check your credentials and try again.';
       case 'auth/wrong-password':

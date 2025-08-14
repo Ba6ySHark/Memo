@@ -38,8 +38,8 @@ export default function SignupScreen({ navigation }) {
       return;
     }
 
-    if (password.length < 6) {
-      showError('Error', 'Password must be at least 6 characters long');
+    if (password.length < 8) {
+      showError('Error', 'Password must be at least 8 characters long');
       return;
     }
     
@@ -135,6 +135,14 @@ export default function SignupScreen({ navigation }) {
                 style={signupStyles.glassInput}
                 inputStyle={signupStyles.input}
               />
+              <Text style={{
+                color: 'rgba(255, 255, 255, 0.5)',
+                fontSize: 12,
+                marginTop: 5,
+                marginLeft: 15,
+              }}>
+                Password must be at least 8 characters long
+              </Text>
             </AnimatedContainer>
 
             {/* Confirm Password Input */}
